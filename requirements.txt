@@ -1,0 +1,4 @@
+# Standard library is enough for HTTP demo mode.
+cryptography>=43
+# Required only for Microsoft SQL Server mode:
+pyodbc>=5

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.test-tmp/
+data/*.db*
+data/backups/
+data/certs/
+.env
+*.log
+reports/screenshots/
