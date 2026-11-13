@@ -1,0 +1,8 @@
+{
+  "checked_at": "2026-11-13T09:50:28.791318+04:00",
+  "status": 200,
+  "certificate_verified_against_local_certificate": true,
+  "cookie_secure": true,
+  "cookie_httponly": true,
+  "cookie_samesite_strict": true
+}

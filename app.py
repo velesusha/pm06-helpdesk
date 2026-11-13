@@ -23,7 +23,7 @@ from urllib.parse import parse_qs, urlsplit
 ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get('HELPDESK_DATA', ROOT / 'data'))
 SQLSERVER = os.environ.get('HELPDESK_SQLSERVER', '')
-VERSION = os.environ.get('HELPDESK_VERSION', '1.0')
+VERSION = os.environ.get('HELPDESK_VERSION', '1.1')
 STATUSES = {'new': 'Новая', 'in_progress': 'В работе', 'resolved': 'Решена', 'closed': 'Закрыта'}
 ROLES = {'operator': 'Оператор', 'engineer': 'Исполнитель', 'admin': 'Администратор'}
 DEMO_PASSWORD = 'Practice2026!'
@@ -71,7 +71,11 @@ def password_ok(password, encoded):
 
 
 def priority(unavailable, affected):
-    return {'code':'normal','name':'Обычный','reason':'Версия 1.0: базовый учёт заявок без экспертных правил.'}
+    if unavailable and affected >= 5:
+        return {'code': 'critical', 'name': 'Критический', 'reason': 'Сервис недоступен и затронуто не менее 5 пользователей.'}
+    if unavailable or affected >= 5:
+        return {'code': 'high', 'name': 'Высокий', 'reason': 'Сервис недоступен или затронуто не менее 5 пользователей.'}
+    return {'code': 'normal', 'name': 'Обычный', 'reason': 'Сервис доступен и затронуто менее 5 пользователей.'}
 
 
 class Database:
