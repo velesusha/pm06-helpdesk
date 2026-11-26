@@ -13,6 +13,7 @@ jobs:
           $runtime = 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip'
           Invoke-WebRequest $runtime -OutFile "$env:RUNNER_TEMP\python.zip"
           Expand-Archive "$env:RUNNER_TEMP\python.zip" -DestinationPath runtime-windows
+          Add-Content runtime-windows/python312._pth ".."
       - name: Run tests
         shell: pwsh
         run: .\runtime-windows\python.exe -m unittest discover -s tests -v
