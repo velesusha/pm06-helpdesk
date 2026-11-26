@@ -1,0 +1,36 @@
+name: SQL Server LocalDB
+on: [push, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run SQL Server update and recovery
+        shell: pwsh
+        run: |
+          $command = Get-Command SqlLocalDB.exe -ErrorAction SilentlyContinue
+          if ($command) {
+            $localDB = $command.Source
+          } else {
+            $localDB = (Get-ChildItem "$env:ProgramFiles\Microsoft SQL Server" -Filter SqlLocalDB.exe -Recurse |
+              Sort-Object FullName -Descending | Select-Object -First 1).FullName
+          }
+          if (!$localDB) { throw 'SQL Server LocalDB was not found' }
+          & $localDB create Pm06Practice -s
+          if ($LASTEXITCODE -ne 0) { throw 'LocalDB could not start' }
+          $driver = Get-OdbcDriver -Platform '64-bit' | Where-Object Name -Match 'ODBC Driver \d+ for SQL Server' |
+            Sort-Object Name -Descending | Select-Object -First 1
+          if (!$driver) { throw 'Microsoft ODBC driver was not found' }
+          $env:HELPDESK_SQLSERVER = "Driver={$($driver.Name)};Server=(LocalDB)\Pm06Practice;Trusted_Connection=yes;TrustServerCertificate=yes"
+          python -m pip install pyodbc
+          python tools/verify_sqlserver.py "$env:RUNNER_TEMP\pm06-sqlserver"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pm06-sqlserver
+          path: ${{ runner.temp }}/pm06-sqlserver/
+          if-no-files-found: error
