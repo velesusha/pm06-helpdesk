@@ -1,4 +1,4 @@
-"""PM.06 helpdesk. Python 3.10+, SQLite demo or Microsoft SQL Server via ODBC."""
+"""PM.06 helpdesk. Python 3.9+, SQLite demo or Microsoft SQL Server via ODBC."""
 from __future__ import annotations
 
 import argparse
@@ -551,7 +551,7 @@ def main():
     parser.add_argument('--seed', action='store_true', help='Import sample CSV (idempotent)')
     args = parser.parse_args()
     DATA.mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(filename=DATA / 'app.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s', encoding='utf-8')
+    logging.basicConfig(handlers=[logging.FileHandler(DATA / 'app.log', encoding='utf-8')], level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     initialize()
     if args.seed:
         with Database() as db:

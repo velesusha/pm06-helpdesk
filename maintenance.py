@@ -48,7 +48,7 @@ def restore(source, target_dir):
         raise SystemExit('Target already contains a database. Choose a new empty directory.')
     target_dir.mkdir(parents=True, exist_ok=True)
     # Refuse invalid files before creating the destination database.
-    with closing(sqlite3.connect(f'file:{source.as_posix()}?mode=ro', uri=True)) as src:
+    with closing(sqlite3.connect(source.as_uri() + '?mode=ro', uri=True)) as src:
         if src.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
             raise SystemExit('Backup integrity check failed.')
         src.execute('SELECT COUNT(*) FROM tickets').fetchone()
